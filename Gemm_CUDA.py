@@ -32,11 +32,11 @@ def cuda_gemm(A, B, threadsperblock):
     blockspergrid = (blockspergrid_x, blockspergrid_y)
     #Initiate the kernel call with the request blocks
     cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
-    #Copy result to host memory
+    #Copy result back from GPU memory to CPU memory
     C = C_global.copy_to_host()
 
     #TODO: Add other metrics to output
-    #TODO: Dig for more info
+    #TODO: Dig for more info/optimization potentially
 
     return C
 
