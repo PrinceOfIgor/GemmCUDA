@@ -3,7 +3,6 @@ from numba import cuda, float32, jit
 import sys
 import time
 
-
 #Kernel function for GPU
 @cuda.jit
 def cuda_gemm_kernel(A, B, C):
@@ -32,11 +31,15 @@ def cuda_gemm(A, B, threadsperblock):
     blockspergrid = (blockspergrid_x, blockspergrid_y)
     #Initiate the kernel call with the request blocks
     cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
-    #Copy to host memory
+    #Copy result to host memory
     C = C_global.copy_to_host()
+
+    #TODO: Add other metrics to output
+    #TODO: Dig for more info
 
     return C
 
+#Naive GEMM using numba JIT as lab 3
 @jit(nopython=True)
 def naive_matrix_mul_numba(A, B):
     assert A.shape[1] == B.shape[0]
@@ -47,6 +50,7 @@ def naive_matrix_mul_numba(A, B):
                 C[i, j] += A[i, k] * B[k, j]
     return C
 
+#Naive GEMM using numba JIT and loop reordering as lab 3
 @jit(nopython=True)
 def ikj_matrix_mul_numba(A,B):
     assert A.shape[1] == B.shape[0]
@@ -58,7 +62,7 @@ def ikj_matrix_mul_numba(A,B):
     return C
 
 def main():
-
+#Taken from lab 3 and played with a bit
     if len(sys.argv) != 4:
         matrix_size = 256
         print(f"Defaulting to NxN {matrix_size} sized matrices")
@@ -73,12 +77,14 @@ def main():
 
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide
+    #TODO: Run trials and see which is a happy number
     threadsperblock = (16, 16)
     num_runs = 10
-    #Randomized initial matrices
+    #Randomized initial matrices, numba CUDA works with numpy arrays
     A = np.random.rand(m, n)
     B = np.random.rand(n, k)
 
+    #Run against the GPU
     start = time.time()
     for _ in range(num_runs):
         result = cuda_gemm(A, B, threadsperblock)
@@ -92,7 +98,6 @@ def main():
     end = time.time()
     naive_time_numba = end - start
 
-    # TODO: time other implementations here
     #ikj matrix mult with numba
     start = time.time()
     for _ in range(num_runs):
@@ -100,9 +105,10 @@ def main():
     end = time.time()
     ikj_time_numba = end - start
 
+    #Overall time
     print('naive time numba: {}'.format(naive_time_numba))
     print('ikj time numba: {}'.format(ikj_time_numba))
-    print('ikj time numba: {}'.format(cuda_time_numba))
+    print('CUDA time numba: {}'.format(cuda_time_numba))
 
 main()
 
