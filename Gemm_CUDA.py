@@ -24,7 +24,7 @@ def cuda_gemm(A, B, threadsperblock):
     #Send each array to device memory
     A_global = cuda.to_device(A)
     B_global = cuda.to_device(B)
-    C_global = cuda.device_array((m, n), dtype=float32)
+    C_global = cuda.device_array((m, n))
 
     #Determine the tiling for the GPU threads
     blockspergrid_x = (m + threadsperblock[0] - 1) // threadsperblock[0]
@@ -39,6 +39,16 @@ def cuda_gemm(A, B, threadsperblock):
     #TODO: Dig for more info/optimization potentially
 
     return C
+
+def naive_matrix_mul(A, B):
+    assert A.shape[1] == B.shape[0]
+    C = np.zeros((A.shape[0], B.shape[1]))
+    for i in range(A.shape[0]):
+        for j in range(B.shape[1]):
+            for k in range(A.shape[1]):
+                C[i, j] += A[i, k] * B[k, j]
+    return C
+
 
 #Naive GEMM using numba JIT as lab 3
 @jit(nopython=True)
@@ -92,6 +102,14 @@ def main():
     end = time.time()
     cuda_time_numba = end - start
 
+    #Naive GEMM
+    start = time.time()
+    for _ in range(num_runs):
+        naive_matrix_mul(A, B)
+    end = time.time()
+    naive_time = end - start
+
+
     #naive matrix mult with numba
     start = time.time()
     for _ in range(num_runs):
@@ -107,6 +125,7 @@ def main():
     ikj_time_numba = end - start
 
     #Overall time
+    print('naive time: {}'.format(naive_time))
     print('naive time numba: {}'.format(naive_time_numba))
     print('ikj time numba: {}'.format(ikj_time_numba))
     print('CUDA time numba: {}'.format(cuda_time_numba))
