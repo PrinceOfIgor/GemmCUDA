@@ -1,4 +1,5 @@
 import numpy as np
+import pandas
 from numba import cuda, float32, jit
 import sys
 import time
@@ -57,6 +58,43 @@ def ikj_matrix_mul_numba(A,B):
             for j in range(B.shape[1]):
                 C[i, j] += A[i, k] * B[k, j]
     return C
+
+def save_trial(trialTimes):
+    
+    excel_filename = "trials.xlsx"
+    
+    #Check if the file exists first
+    try:
+        df = pandas.read_excel(excel_filename)
+    except FileNotFoundError:
+        # If the file doesn't exist, create a new DataFrame, expand with more times as required
+        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time Numba naive'])
+    
+        # Get the current trial name from the last row in the DataFrame (if it exists)
+    if not df.empty:
+        last_trial = df.iloc[-1]['Trial Name']
+        trial_number = int(last_trial.split()[-1])
+        trial_name = f'Trial {trial_number + 1}'
+    else:
+        trial_name = 'Trial 1'   
+      
+       #Set up the data frame with the passed in times
+    new_data = {
+        'Trial Name' : trial_name,
+        'Naive Time' : trialTimes[0], 
+        'Naive Time Numba' : trialTimes[1], 
+        'ikj Time Numba' : trialTimes[2], 
+        'CUDA Time Numba naive' : trialTimes[3]
+    }
+    
+    #Append the data frame to excel as a new row
+    df.append(new_data, ignore_index=True)
+
+    # Save the updated DataFrame to the Excel file
+    df.to_excel(excel_filename, index=False)
+
+    print(f'Data saved to {excel_filename}')
+
 
 def main():
 #Taken from lab 3 and played with a bit
