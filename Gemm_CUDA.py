@@ -5,7 +5,7 @@ import sys
 import time
 import CUDAKernels as ck
 
-def cuda_gemm(A, B, threadsperblock):
+def cuda_gemm(A, B, threadsperblock, k_type):
 
     m, n = A.shape[0], B.shape[1]
     #Send each array to device memory
@@ -17,13 +17,36 @@ def cuda_gemm(A, B, threadsperblock):
     blockspergrid_x = (m + threadsperblock[0] - 1) // threadsperblock[0]
     blockspergrid_y = (n + threadsperblock[1] - 1) // threadsperblock[1]
     blockspergrid = (blockspergrid_x, blockspergrid_y)
-    #Initiate the kernel call with the request blocks
-    ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+ 
+    match k_type:
+        case "Naive":
+            start = time.time()
+            #Initiate the kernel call with the request blocks
+            ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+            end = time.time()
+            print(f"Time for naive kernel: {end-start}")
+        case "Global Memory Coalescing":
+            start = time.time()
+            #Initiate the kernel call with the request blocks
+            ck.cuda_gmc_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+            end = time.time()
+            print(f"Time for GMC kernel: {end-start}")
+        case "Shared Memory Caching":
+            start = time.time()
+            #Initiate the kernel call with the request blocks
+            ck.cuda_gemm_smc_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+            end = time.time()
+            print(f"Time for SMC kernel: {end-start}")
+        case "Vectorized":
+            start = time.time()
+            #Initiate the kernel call with the request blocks
+            ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+            end = time.time()
+            print(f"Time for Vectorized kernel: {end-start}")
+    
     #Copy result back from GPU memory to CPU memory
     C = C_global.copy_to_host()
 
-    #TODO: Add other metrics to output
-    #TODO: Dig for more info/optimization potentially
 
     return C
 
@@ -68,7 +91,7 @@ def save_trial(trialTimes):
         df = pandas.read_excel(excel_filename)
     except FileNotFoundError:
         # If the file doesn't exist, create a new DataFrame, expand with more times as required
-        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time Numba naive'])
+        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time Numba naive', 'CUDA Time Numba GMC', 'CUDA Time Numba SMC'])
     
         # Get the current trial name from the last row in the DataFrame (if it exists)
     if not df.empty:
@@ -85,7 +108,9 @@ def save_trial(trialTimes):
         'Naive Time' : [trialTimes[0]], 
         'Naive Time Numba' : [trialTimes[1]], 
         'ikj Time Numba' : [trialTimes[2]], 
-        'CUDA Time Numba naive' : [trialTimes[3]]
+        'CUDA Time naive' : [trialTimes[3]],
+        'CUDA Time Global Memory Coalescing' : [trialTimes[4]],
+        'CUDA Time Shared Memory Caching' : [trialTimes[5]]
         })
     
     
@@ -114,20 +139,35 @@ def main():
 
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide
-    #TODO: Run trials and see which is a happy number
     threadsperblock = (16, 16)
     num_runs = 10
+    
     #Randomized initial matrices, numba CUDA works with numpy arrays
     A = np.random.rand(m, n).astype(np.float32)
     B = np.random.rand(n, k).astype(np.float32)
-
-    #Run against the GPU
+    print("-----------------")
+    #Run against the GPU naively
     start = time.time()
     for _ in range(num_runs):
-        result = cuda_gemm(A, B, threadsperblock)
+        result = cuda_gemm(A, B, threadsperblock, "Naive")
     end = time.time()
-    cuda_time_numba = end - start
-
+    cuda_time = end - start
+    print("-----------------")
+    #Run against the GPU with global memory coalesced access
+    start = time.time()
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Global Memory Coalescing")
+    end = time.time()
+    cuda_gmc_time = end - start
+    print("-----------------")
+    #Run against the GPU with shared memory caching
+    start = time.time()
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
+    end = time.time()
+    cuda_smc_time = end - start
+    print("-----------------")
+    
      #Naive GEMM
     start = time.time()
     #for _ in range(num_runs):
@@ -150,7 +190,7 @@ def main():
     end = time.time()
     ikj_time_numba = end - start
     
-    trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time_numba]
+    trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time]
 
     save_trial(trialTimes)    
 
@@ -158,7 +198,9 @@ def main():
     print('naive time: {}'.format(naive_time))
     print('naive time numba: {}'.format(naive_time_numba))
     print('ikj time numba: {}'.format(ikj_time_numba))
-    print('CUDA time numba: {}'.format(cuda_time_numba))
+    print('CUDA time : {}'.format(cuda_time))
+    print('CUDA GMC time : {}'.format(cuda_gmc_time))
+    print('CUDA SMC time : {}'.format(cuda_smc_time))
 
 main()
 
