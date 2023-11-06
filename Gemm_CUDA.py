@@ -79,16 +79,18 @@ def save_trial(trialTimes):
         trial_name = 'Trial 1'   
       
        #Set up the data frame with the passed in times
-    new_data = {
-        'Trial Name' : trial_name,
-        'Naive Time' : trialTimes[0], 
-        'Naive Time Numba' : trialTimes[1], 
-        'ikj Time Numba' : trialTimes[2], 
-        'CUDA Time Numba naive' : trialTimes[3]
-    }
+    new_data = pandas.DataFrame(
+        {
+        'Trial Name' : [trial_name],
+        'Naive Time' : [trialTimes[0]], 
+        'Naive Time Numba' : [trialTimes[1]], 
+        'ikj Time Numba' : [trialTimes[2]], 
+        'CUDA Time Numba naive' : [trialTimes[3]]
+        })
+    
     
     #Append the data frame to excel as a new row
-    df.append(new_data, ignore_index=True)
+    df = pandas.concat([df, new_data], ignore_index=True)
 
     # Save the updated DataFrame to the Excel file
     df.to_excel(excel_filename, index=False)
@@ -101,7 +103,7 @@ def main():
     if len(sys.argv) != 4:
         matrix_size = 256
         print(f"Defaulting to NxN {matrix_size} sized matrices")
-        print("To change the size of the matrices to be multiplied, provide it as arguments")
+        print("To change the size of the matrices to be multiplied, provide it as arguments (i.e. python Gemm_CUDA.py 4096")
         #Cast to int
         m, n, k = int(matrix_size), int(matrix_size), int(matrix_size)
         print(f"Running with {matrix_size} sized matrices")
@@ -126,13 +128,13 @@ def main():
     end = time.time()
     cuda_time_numba = end - start
 
-    #Naive GEMM
+     #Naive GEMM
     start = time.time()
-    for _ in range(num_runs):
-        naive_matrix_mul(A, B)
+    #for _ in range(num_runs):
+    #    naive_matrix_mul(A, B)
     end = time.time()
     naive_time = end - start
-
+    
 
     #naive matrix mult with numba
     start = time.time()
@@ -147,6 +149,10 @@ def main():
         ikj_matrix_mul_numba(A, B)
     end = time.time()
     ikj_time_numba = end - start
+    
+    trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time_numba]
+
+    save_trial(trialTimes)    
 
     #Overall time
     print('naive time: {}'.format(naive_time))
