@@ -91,7 +91,7 @@ def save_trial(trialTimes):
         df = pandas.read_excel(excel_filename)
     except FileNotFoundError:
         # If the file doesn't exist, create a new DataFrame, expand with more times as required
-        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time Numba naive', 'CUDA Time Numba GMC', 'CUDA Time Numba SMC'])
+        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time Numba naive', 'CUDA Time Numba GMC', 'CUDA Time Numba SMC', 'CUDA time Numba vectorized'])
     
         # Get the current trial name from the last row in the DataFrame (if it exists)
     if not df.empty:
@@ -110,7 +110,8 @@ def save_trial(trialTimes):
         'ikj Time Numba' : [trialTimes[2]], 
         'CUDA Time naive' : [trialTimes[3]],
         'CUDA Time Global Memory Coalescing' : [trialTimes[4]],
-        'CUDA Time Shared Memory Caching' : [trialTimes[5]]
+        'CUDA Time Shared Memory Caching' : [trialTimes[5]],
+        'CUDA Time Vectorized' : [trialTimes[6]]
         })
     
     
@@ -170,7 +171,16 @@ def main():
     end = time.time()
     cuda_smc_time = end - start
     print("-----------------")
-    
+    #Run against the GPU with vectorization
+    start = time.time()
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Vectorized")
+    end = time.time()
+    cuda_vec_time = end - start
+    print("-----------------")
+        
+
+
      #Naive GEMM
     start = time.time()
     for _ in range(num_runs):
@@ -193,7 +203,7 @@ def main():
     end = time.time()
     ikj_time_numba = end - start
     
-    trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time]
+    trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time, cuda_vec_time]
 
     save_trial(trialTimes)    
 
@@ -204,6 +214,8 @@ def main():
     print('CUDA time : {}'.format(cuda_time))
     print('CUDA GMC time : {}'.format(cuda_gmc_time))
     print('CUDA SMC time : {}'.format(cuda_smc_time))
+    print('CUDA Vec time : {}'.format(cuda_vec_time))
+    
 
 main()
 
