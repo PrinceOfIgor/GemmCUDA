@@ -60,7 +60,7 @@ def naive_matrix_mul(A, B):
     return C
 
 
-#Naive GEMM using numba JIT as lab 3
+#Naive GEMM using numba JIT
 @jit(nopython=True)
 def naive_matrix_mul_numba(A, B):
     assert A.shape[1] == B.shape[0]
@@ -71,7 +71,7 @@ def naive_matrix_mul_numba(A, B):
                 C[i, j] += A[i, k] * B[k, j]
     return C
 
-#Naive GEMM using numba JIT and loop reordering as lab 3
+#Naive GEMM using numba JIT and loop reordering
 @jit(nopython=True)
 def ikj_matrix_mul_numba(A,B):
     assert A.shape[1] == B.shape[0]
@@ -124,11 +124,11 @@ def save_trial(trialTimes):
 
 
 def main():
-#Taken from lab 3 and played with a bit
+#Default to 256x256 arrays by default unless arguments are passed in
     if len(sys.argv) != 4:
         matrix_size = 256
         print(f"Defaulting to NxN {matrix_size} sized matrices")
-        print("To change the size of the matrices to be multiplied, provide it as arguments (i.e. python Gemm_CUDA.py 4096")
+        print("To change the size of the matrices to be multiplied, provide it as arguments (i.e. python Gemm_CUDA.py 4096 4096 4096")
         #Cast to int
         m, n, k = int(matrix_size), int(matrix_size), int(matrix_size)
         print(f"Running with {matrix_size} sized matrices")
@@ -136,6 +136,9 @@ def main():
         m, n, k = sys.argv[1:]
         m, n, k = int(m), int(n), int(k)
         print(f"Running with A as {m}x{n} and B as {n}x{k} sized matrices")
+
+
+    cuda.detect()
 
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide
@@ -170,8 +173,8 @@ def main():
     
      #Naive GEMM
     start = time.time()
-    #for _ in range(num_runs):
-    #    naive_matrix_mul(A, B)
+    for _ in range(num_runs):
+        naive_matrix_mul(A, B)
     end = time.time()
     naive_time = end - start
     
