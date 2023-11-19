@@ -10,6 +10,11 @@ The NVIDIA CUDA toolkit, can be found here: https://developer.nvidia.com/cuda-to
 pip install openpyxl
 pip install numpy
 pip install numba
+pip install pypiwin32
+pip install cuda-python
+
+# Running with different matrix sizes:
+e.g. python Gemm_CUDA.py 4096 4096 4096
 
 # Trials
 - All trials for Matrix Size will use the naive non-JIT implementation of GEMM
@@ -19,13 +24,13 @@ pip install numba
 
 |Trial #	| Matrix Size | Threads Per Block | TILE_DIM |
 |-----------|-------------|-------------------|----------|
-|1			|	32		  |			16		  |		16	 |
-|2			|	64		  |			16		  |		16	 |
-|3			|	128		  |			16		  |		16	 |
-|4			|	256		  |			16		  |		16	 |
-|5			|	512		  |			16		  |		16	 |
-|6			|	1024	  |			16		  |		16	 |
-|7			|	4096	  |			16		  |		16	 |
+|1			|	32		  |			16		  |		16	 |-
+|2			|	64		  |			16		  |		16	 |-
+|3			|	128		  |			16		  |		16	 |-
+|4			|	256		  |			16		  |		16	 |-
+|5			|	512		  |			16		  |		16	 |-
+|6			|	1024	  |			16		  |		16	 |-
+|7			|	4096	  |			16		  |		16	 |-
 |8			|	16384	  |			16		  |		16	 |
 |9			|	4096	  |			4		  |		4	 |
 |10			|	4096	  |			4		  |		8	 |

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas
 from numba import cuda, float32, jit
+from cuda import cuda as cupy
 import sys
 import time
 import CUDAKernels as ck
@@ -91,7 +92,7 @@ def save_trial(trialTimes):
         df = pandas.read_excel(excel_filename)
     except FileNotFoundError:
         # If the file doesn't exist, create a new DataFrame, expand with more times as required
-        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time Numba naive', 'CUDA Time Numba GMC', 'CUDA Time Numba SMC', 'CUDA time Numba vectorized'])
+        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time naive', 'CUDA Time Global Memory Coalescing', 'CUDA Time Shared Memory Caching', 'CUDA Time Vectorized'])
     
         # Get the current trial name from the last row in the DataFrame (if it exists)
     if not df.empty:
@@ -122,6 +123,49 @@ def save_trial(trialTimes):
     df.to_excel(excel_filename, index=False)
 
     print(f'Data saved to {excel_filename}')
+    
+def CudaInfo():
+    cuda.detect()
+    # Initialize CUDA Driver API
+    (err,) = cupy.cuInit(0)
+
+    # Get attributes
+    err, DEVICE_NAME = cupy.cuDeviceGetName(128, 0)
+    DEVICE_NAME = DEVICE_NAME.decode("ascii").replace("\x00", "")
+
+    err, MAX_THREADS_PER_BLOCK = cupy.cuDeviceGetAttribute(
+        cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK, 0
+    )
+    err, MAX_BLOCK_DIM_X = cupy.cuDeviceGetAttribute(
+        cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X, 0
+    )
+    err, MAX_GRID_DIM_X = cupy.cuDeviceGetAttribute(
+        cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X, 0
+    )
+    err, SMs = cupy.cuDeviceGetAttribute(
+        cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 0
+    )
+    err, SHR_MEM = cupy.cuDeviceGetAttribute(
+        cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK, 0
+    )
+    err, WARPSIZE = cupy.cuDeviceGetAttribute(
+        cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_WARP_SIZE, 0
+    )
+    err, L2Size = cupy.cuDeviceGetAttribute(
+        cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE, 0
+    )
+    
+    
+
+    print(f"Device Name: {DEVICE_NAME}")
+    print(f"Maximum number of multiprocessors: {SMs}")
+    print(f"Maximum number of threads per block: {MAX_THREADS_PER_BLOCK:10}")
+    print(f"Maximum number of blocks per grid:   {MAX_BLOCK_DIM_X:10}")
+    print(f"Maximum number of threads per grid:  {MAX_GRID_DIM_X:10}")
+    print(f"Maximum shared memory per block:  {SHR_MEM} bytes")
+    print(f"Warp Size:  {WARPSIZE}")
+    print(f"L2 Cache Size:  {L2Size} bytes")
+    
 
 
 def main():
@@ -138,11 +182,10 @@ def main():
         m, n, k = int(m), int(n), int(k)
         print(f"Running with A as {m}x{n} and B as {n}x{k} sized matrices")
 
-
-    cuda.detect()
-
+    CudaInfo()
+    
     #Initialize values
-    #Threads per block of operations, good to be a multiple of 32 according to programming guide
+    #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
     threadsperblock = (16, 16)
     num_runs = 10
     
