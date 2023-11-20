@@ -223,25 +223,28 @@ def main():
     print("-----------------")
         
 
-
+    print("Naive implementation")
      #Naive GEMM
     start = time.time()
-    for _ in range(num_runs):
-        naive_matrix_mul(A, B)
+    #for _ in range(num_runs):
+    #print(_)
+    #    naive_matrix_mul(A, B)
     end = time.time()
     naive_time = end - start
     
-
+    print("Naive implementation with JIT")
     #naive matrix mult with numba
     start = time.time()
     for _ in range(num_runs):
+        print(_)
         naive_matrix_mul_numba(A, B)
     end = time.time()
     naive_time_numba = end - start
-
+    print("Naive implementation with JIT and loop reordering")
     #ikj matrix mult with numba
     start = time.time()
     for _ in range(num_runs):
+        print(_)
         ikj_matrix_mul_numba(A, B)
     end = time.time()
     ikj_time_numba = end - start

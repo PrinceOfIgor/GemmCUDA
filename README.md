@@ -22,7 +22,7 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 
 # Trials
 - All trials for Matrix Size will use the naive non-JIT implementation of GEMM
-- All trials after 7 will not use the naive non-JIT implementation for the sake of time and sanity
+- All trials after 6 will not use the naive non-JIT implementation for the sake of time and sanity (4096 was taking more than 20 hours...)
 - All trials will compare against naive GEMM with numba JIT and loop re-ordered GEMM with numba JIT
 - Threads Per Block affects all 4 kernels, TILE_DIM affects just shared memory caching and vectorized kernels
 
@@ -34,8 +34,8 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 |4			|	256		  |			16		  |		16	 |-
 |5			|	512		  |			16		  |		16	 |-
 |6			|	1024	  |			16		  |		16	 |-
-|7			|	4096	  |			16		  |		16	 |- So far this has taken 18 hours for naive python GEMM (~2 AM to 8 PM)
-|8			|	16384	  |			16		  |		16	 |
+|7			|	4096	  |			16		  |		16	 |-
+|8			|	16384	  |			16		  |		16	 |- Memory use skyrockets comparatively
 |9			|	4096	  |			4		  |		4	 |
 |10			|	4096	  |			4		  |		8	 |
 |11			|	4096	  |			4		  |		16	 |
