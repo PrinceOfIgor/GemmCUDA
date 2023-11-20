@@ -1,6 +1,10 @@
 # GemmCUDA
-#Alexandru Barsan 2023 for ECE 718
+# Alexandru Barsan 2023 for ECE 718
 TODO: Implement more cuda profiling
+
+# Machine Specifications
+CPU: Intel i7-7700K 
+GPU: Nvidia Geforce GTX 1080 Ti
 
 # Prerequsites:
 A NVIDIA CUDA capable graphics card, reference can be found here: https://developer.nvidia.com/cuda-gpus
@@ -30,7 +34,7 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 |4			|	256		  |			16		  |		16	 |-
 |5			|	512		  |			16		  |		16	 |-
 |6			|	1024	  |			16		  |		16	 |-
-|7			|	4096	  |			16		  |		16	 |-
+|7			|	4096	  |			16		  |		16	 |- So far this has taken 18 hours for naive python GEMM (~2 AM to 8 PM)
 |8			|	16384	  |			16		  |		16	 |
 |9			|	4096	  |			4		  |		4	 |
 |10			|	4096	  |			4		  |		8	 |
