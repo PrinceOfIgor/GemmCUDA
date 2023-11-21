@@ -186,7 +186,7 @@ def main():
     
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
-    threadsperblock = (16, 16)
+    threadsperblock = (4, 4)
     num_runs = 10
     
     #Randomized initial matrices, numba CUDA works with numpy arrays
@@ -235,17 +235,17 @@ def main():
     print("Naive implementation with JIT")
     #naive matrix mult with numba
     start = time.time()
-    for _ in range(num_runs):
-        print(_)
-        naive_matrix_mul_numba(A, B)
+    #for _ in range(num_runs):
+    #    print(_)
+    #    naive_matrix_mul_numba(A, B)
     end = time.time()
     naive_time_numba = end - start
     print("Naive implementation with JIT and loop reordering")
     #ikj matrix mult with numba
     start = time.time()
-    for _ in range(num_runs):
-        print(_)
-        ikj_matrix_mul_numba(A, B)
+    #for _ in range(num_runs):
+    #    print(_)
+    #    ikj_matrix_mul_numba(A, B)
     end = time.time()
     ikj_time_numba = end - start
     
