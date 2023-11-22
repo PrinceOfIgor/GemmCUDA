@@ -54,7 +54,8 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 |21	-> 18	|	4096	  |			32		  |		32	 |
 ----------------------------------------------------------
 
-# In-depth call stack for above errors, kind of expected that memory allocation would have issues
+# In-depth call stack for above errors, using improper tile dimensions for the number of threads per block causes memory access violations.
+# This could be due to misalignment of shared memory accesses that is more forgiving at smaller threads per block and tile dimensions.
 
 File "C:\Users\barsana\source\repos\GemmCUDA\Gemm_CUDA.py", line 49, in cuda_gemm
     C = C_global.copy_to_host()

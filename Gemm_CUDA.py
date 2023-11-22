@@ -12,7 +12,7 @@ def cuda_gemm(A, B, threadsperblock, k_type):
     #Send each array to device memory
     A_global = cuda.to_device(A)
     B_global = cuda.to_device(B)
-    C_global = cuda.device_array((m, n))
+    C_global = cuda.device_array((m, n), np.float32)
 
     #Determine the tiling for the GPU threads
     blockspergrid_x = (m + threadsperblock[0] - 1) // threadsperblock[0]
@@ -44,7 +44,10 @@ def cuda_gemm(A, B, threadsperblock, k_type):
             ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
             end = time.time()
             print(f"Time for Vectorized kernel: {end-start}")
-    
+            
+    #print(C_global.shape)
+    #cuda.synchronize()
+
     #Copy result back from GPU memory to CPU memory
     C = C_global.copy_to_host()
 
@@ -186,7 +189,7 @@ def main():
     
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
-    threadsperblock = (32, 32)
+    threadsperblock = (16, 16)
     num_runs = 10
     
     #Randomized initial matrices, numba CUDA works with numpy arrays

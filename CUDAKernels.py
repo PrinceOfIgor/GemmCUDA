@@ -66,7 +66,7 @@ def cuda_gemm_smc_kernel(A, B, C):
     gridDim_y = cuda.gridDim.y
 
     # Define shared memory for caching
-    TILE_DIM = 32
+    TILE_DIM = 4
     TILE_SIZE = TILE_DIM * TILE_DIM
     A_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
     B_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
@@ -96,7 +96,7 @@ def cuda_gemm_smc_kernel(A, B, C):
             C_value += A_smem[x, k] * B_smem[k, y]
 
         cuda.syncthreads()
-
+    
     if i < C.shape[0] and j < C.shape[1]:
         C[i, j] = C_value
 
@@ -118,7 +118,7 @@ def cuda_gemm_vec_kernel(A, B, C):
     gridDim_y = cuda.gridDim.y
 
     # Define shared memory for caching
-    TILE_DIM = 32
+    TILE_DIM = 4
     TILE_SIZE = TILE_DIM * TILE_DIM
     A_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
     B_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
