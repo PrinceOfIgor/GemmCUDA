@@ -36,20 +36,38 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 |5			|	512		  |			16		  |		16	 |-
 |6			|	1024	  |			16		  |		16	 |-
 |7			|	4096	  |			16		  |		16	 |-
-|8			|	4096	  |			4		  |		4	 |
-|9			|	4096	  |			4		  |		8	 |
-|10			|	4096	  |			4		  |		16	 |
-|11			|	4096	  |			4		  |		32	 |
-|12			|	4096	  |			8		  |		4	 |
-|13			|	4096	  |			8		  |		8	 |
-|14			|	4096	  |			8		  |		16	 |
-|15			|	4096	  |			8		  |		32	 |
-|16			|	4096	  |			16		  |		4	 |
-|17			|	4096	  |			16		  |		8	 |
-|18			|	4096	  |			16		  |		16	 |
-|19			|	4096	  |			16		  |		32	 |
-|20			|	4096	  |			32		  |		4	 |
-|21			|	4096	  |			32		  |		8	 |
-|22			|	4096	  |			32		  |		16	 |
-|23			|	4096	  |			32		  |		32	 |
+|8			|	4096	  |			4		  |		4	 |-
+|9			|	4096	  |			4		  |		8	 |-
+|10			|	4096	  |			4		  |		16	 |-
+|11			|	4096	  |			4		  |		32	 |-
+|12			|	4096	  |			8		  |		4	 |-
+|13			|	4096	  |			8		  |		8	 |-
+|14			|	4096	  |			8		  |		16	 |-
+|15			|	4096	  |			8		  |		32	 |-
+|16	x		|	4096	  |			16		  |		4	 | numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
+|17	-> 16x	|	4096	  |			16		  |		8	 | numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
+|18	-> 16	|	4096	  |			16		  |		16	 |-
+|17			|	4096	  |			16		  |		32	 |-
+|18	x		|	4096	  |			32		  |		4	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
+|19	-> 18x	|	4096	  |			32		  |		8	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
+|20 -> 18x	|	4096	  |			32		  |		16	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
+|21	-> 18	|	4096	  |			32		  |		32	 |
 ----------------------------------------------------------
+
+# In-depth call stack for above errors, kind of expected that memory allocation would have issues
+
+File "C:\Users\barsana\source\repos\GemmCUDA\Gemm_CUDA.py", line 49, in cuda_gemm
+    C = C_global.copy_to_host()
+        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\barsana\AppData\Roaming\Python\Python311\site-packages\numba\cuda\cudadrv\devices.py", line 232, in _require_cuda_context
+    return fn(*args, **kws)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\barsana\AppData\Roaming\Python\Python311\site-packages\numba\cuda\cudadrv\devicearray.py", line 277, in copy_to_host
+    _driver.device_to_host(hostary, self, self.alloc_size,
+  File "C:\Users\barsana\AppData\Roaming\Python\Python311\site-packages\numba\cuda\cudadrv\driver.py", line 3145, in device_to_host
+    fn(host_pointer(dst), device_pointer(src), size, *varargs)
+  File "C:\Users\barsana\AppData\Roaming\Python\Python311\site-packages\numba\cuda\cudadrv\driver.py", line 327, in safe_cuda_api_call
+    self._check_ctypes_error(fname, retcode)
+  File "C:\Users\barsana\AppData\Roaming\Python\Python311\site-packages\numba\cuda\cudadrv\driver.py", line 395, in _check_ctypes_error
+    raise CudaAPIError(retcode, msg)
+numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
