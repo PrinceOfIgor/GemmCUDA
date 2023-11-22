@@ -27,32 +27,37 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 - All trials will compare against naive GEMM with numba JIT and loop re-ordered GEMM with numba JIT
 - Threads Per Block affects all 4 kernels, TILE_DIM affects just shared memory caching and vectorized kernels, Trials 8 to 23 will only compare the GPU kernels
 
-|Trial #	| Matrix Size | Threads Per Block | TILE_DIM |
-|-----------|-------------|-------------------|----------|
-|1			|	32		  |			16		  |		16	 |-
-|2			|	64		  |			16		  |		16	 |-
-|3			|	128		  |			16		  |		16	 |-
-|4			|	256		  |			16		  |		16	 |-
-|5			|	512		  |			16		  |		16	 |-
-|6			|	1024	  |			16		  |		16	 |-
-|7			|	4096	  |			16		  |		16	 |-
-|8			|	4096	  |			4		  |		4	 |-
-|9			|	4096	  |			4		  |		8	 |-
-|10			|	4096	  |			4		  |		16	 |-
-|11			|	4096	  |			4		  |		32	 |-
-|12			|	4096	  |			8		  |		4	 |-
-|13			|	4096	  |			8		  |		8	 |-
-|14			|	4096	  |			8		  |		16	 |-
-|15			|	4096	  |			8		  |		32	 |-
-|16	x		|	4096	  |			16		  |		4	 | numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
-|17	-> 16x	|	4096	  |			16		  |		8	 | numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
-|18	-> 16	|	4096	  |			16		  |		16	 |-
-|17			|	4096	  |			16		  |		32	 |-
-|18	x		|	4096	  |			32		  |		4	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
-|19	-> 18x	|	4096	  |			32		  |		8	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
-|20 -> 18x	|	4096	  |			32		  |		16	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR
-|21	-> 18	|	4096	  |			32		  |		32	 |
-----------------------------------------------------------
+|Trial #	| Matrix Size | Threads Per Block | TILE_DIM |  Comment |
+|-----------|-------------|-------------------|----------|----------|
+|1			|	32		  |			16		  |		16	 |Done|
+|2			|	64		  |			16		  |		16	 |Done|
+|3			|	128		  |			16		  |		16	 |Done|
+|4			|	256		  |			16		  |		16	 |Done|
+|5			|	512		  |			16		  |		16	 |Done|
+|6			|	1024	  |			16		  |		16	 |Done|
+|7			|	4096	  |			16		  |		16	 |Done|
+|8			|	4096	  |			4		  |		4	 |Done|
+|9			|	4096	  |			4		  |		8	 |Done|
+|10			|	4096	  |			4		  |		16	 |Done|
+|11			|	4096	  |			4		  |		32	 |Done|
+|12			|	4096	  |			8		  |		4	 |Done|
+|13			|	4096	  |			8		  |		8	 |Done|
+|14			|	4096	  |			8		  |		16	 |Done|
+|15			|	4096	  |			8		  |		32	 |Done|
+|16	x		|	4096	  |			16		  |		4	 | numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
+|17	-> 16x	|	4096	  |			16		  |		8	 | numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
+|18	-> 16	|	4096	  |			16		  |		16	 |Done|
+|17			|	4096	  |			16		  |		32	 |Done|
+|18	x		|	4096	  |			32		  |		4	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
+|19	-> 18x	|	4096	  |			32		  |		8	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
+|20 -> 18x	|	4096	  |			32		  |		16	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
+|21	-> 18	|	4096	  |			32		  |		32	 |Done|
+|19			|	4096	  |			16		  |		4	 |Works for vectorized kernel|
+|20     	|	4096	  |			16		  |		8	 |Works for vectorized kernel|
+|21 		|	4096	  |			32		  |		4	 |Works for vectorized kernel|
+|22     	|	4096	  |			32		  |		8	 |Works for vectorized kernel|
+|23     	|	4096	  |			32		  |		16	 |Works for vectorized kernel|
+--------------------------------------------------------------------------------------
 
 # In-depth call stack for above errors, using improper tile dimensions for the number of threads per block causes memory access violations.
 # This could be due to misalignment of shared memory accesses that is more forgiving at smaller threads per block and tile dimensions.

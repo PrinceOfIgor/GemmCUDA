@@ -189,7 +189,7 @@ def main():
     
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
-    threadsperblock = (16, 16)
+    threadsperblock = (32, 32)
     num_runs = 10
     
     #Randomized initial matrices, numba CUDA works with numpy arrays
@@ -212,8 +212,8 @@ def main():
     print("-----------------")
     #Run against the GPU with shared memory caching
     start = time.time()
-    for _ in range(num_runs):
-        result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
+   # for _ in range(num_runs):
+   #     result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
     end = time.time()
     cuda_smc_time = end - start
     print("-----------------")
