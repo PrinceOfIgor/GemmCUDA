@@ -58,9 +58,10 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 |22     	|	4096	  |			32		  |		8	 |Works for vectorized kernel|
 |23     	|	4096	  |			32		  |		16	 |Works for vectorized kernel|
 --------------------------------------------------------------------------------------
-
-# In-depth call stack for above errors, using improper tile dimensions for the number of threads per block causes memory access violations.
-# This could be due to misalignment of shared memory accesses that is more forgiving at smaller threads per block and tile dimensions.
+# Memory Access Violation
+In-depth call stack for above errors below, using improper tile dimensions for the number of threads per block causes memory access violations due to probably misaligment.
+This could be due to misalignment of shared memory accesses that is more forgiving at smaller threads per block and tile dimensions.
+Vectorization transpose forces alignment of shared memory and then just iterates through the working set based on tile_dim, probably why we avoid the error.
 
 File "C:\Users\barsana\source\repos\GemmCUDA\Gemm_CUDA.py", line 49, in cuda_gemm
     C = C_global.copy_to_host()
