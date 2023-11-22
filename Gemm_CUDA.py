@@ -196,13 +196,15 @@ def main():
     A = np.random.rand(m, n).astype(np.float32)
     B = np.random.rand(n, k).astype(np.float32)
     print("-----------------")
+    
     #Run against the GPU naively
-    start = time.time()
+    start = time.time()    
     for _ in range(num_runs):
         result = cuda_gemm(A, B, threadsperblock, "Naive")
     end = time.time()
     cuda_time = end - start
     print("-----------------")
+    
     #Run against the GPU with global memory coalesced access
     start = time.time()
     for _ in range(num_runs):
@@ -210,13 +212,15 @@ def main():
     end = time.time()
     cuda_gmc_time = end - start
     print("-----------------")
+    
     #Run against the GPU with shared memory caching
     start = time.time()
-   # for _ in range(num_runs):
-   #     result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
     end = time.time()
     cuda_smc_time = end - start
     print("-----------------")
+    
     #Run against the GPU with vectorization
     start = time.time()
     for _ in range(num_runs):
@@ -229,26 +233,26 @@ def main():
     print("Naive implementation")
      #Naive GEMM
     start = time.time()
-    #for _ in range(num_runs):
-    #print(_)
-    #    naive_matrix_mul(A, B)
+    for _ in range(num_runs):
+        #print(_)
+        naive_matrix_mul(A, B)
     end = time.time()
     naive_time = end - start
     
     print("Naive implementation with JIT")
     #naive matrix mult with numba
     start = time.time()
-    #for _ in range(num_runs):
-    #    print(_)
-    #    naive_matrix_mul_numba(A, B)
+    for _ in range(num_runs):
+        #print(_)
+        naive_matrix_mul_numba(A, B)
     end = time.time()
     naive_time_numba = end - start
     print("Naive implementation with JIT and loop reordering")
     #ikj matrix mult with numba
     start = time.time()
-    #for _ in range(num_runs):
-    #    print(_)
-    #    ikj_matrix_mul_numba(A, B)
+    for _ in range(num_runs):
+        #print(_)
+        ikj_matrix_mul_numba(A, B)
     end = time.time()
     ikj_time_numba = end - start
     

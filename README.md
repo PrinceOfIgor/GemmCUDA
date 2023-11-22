@@ -26,13 +26,18 @@ pip install cuda-python
 
 
 # Running with different matrix sizes:
-e.g. python Gemm_CUDA.py 4096 4096 4096
+e.g. 
+python Gemm_CUDA.py 4096 4096 4096  
+
+## Profiling (most useful if running just one kernel)
+nvprof python Gemm_CUDA.py 4096 4096 4096  
 
 # Trials
 - All trials for Matrix Size will use the naive non-JIT implementation of GEMM
 - All trials after 6 will not use the naive non-JIT implementation for the sake of time and sanity (4096 was taking more than 20 hours...)
 - All trials will compare against naive GEMM with numba JIT and loop re-ordered GEMM with numba JIT
 - Threads Per Block affects all 4 kernels, TILE_DIM affects just shared memory caching and vectorized kernels, Trials 8 to 23 will only compare the GPU kernels
+- Profiling done on some interesting trials/kernels for trials 24 - 28
 
 |Trial #	  | Matrix Size | Threads Per Block | TILE_DIM |  Comment |
 |-----------|-------------|-------------------|----------|----------|
@@ -58,12 +63,17 @@ e.g. python Gemm_CUDA.py 4096 4096 4096
 |x          |	4096	  |			32		  |		4	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
 |x          |	4096	  |			32		  |		8	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
 |x          |	4096	  |			32		  |		16	 |numba.cuda.cudadrv.driver.CudaAPIError: [700] Call to cuMemcpyDtoH results in UNKNOWN_CUDA_ERROR for shared memory access kernel|
-|18	        |	4096	  |			32		  |		32	 |Done|
-|19			    |	4096	  |			16		  |		4	 |Works for vectorized kernel|
-|20         |	4096	  |			16		  |		8	 |Works for vectorized kernel|
-|21 		    |	4096	  |			32		  |		4	 |Works for vectorized kernel|
-|22         |	4096	  |			32		  |		8	 |Works for vectorized kernel|
-|23         |	4096	  |			32		  |		16	 |Works for vectorized kernel|
+|18	        |	4096	  |			32		|		32	 |Done|
+|19			    |	4096	  |			16	|		4	 |Works for vectorized kernel|
+|20         |	4096	  |			16		|		8	 |Works for vectorized kernel|
+|21 		    |	4096	  |			32	|		4	 |Works for vectorized kernel|
+|22         |	4096	  |			32		|	8	 |Works for vectorized kernel|
+|23         |	4096	  |			32		|   16	 |Works for vectorized kernel|
+|24         |   4096      | 4               | 32     |Same as Trial 11, SM kernel profiled
+|25         |   4096      | 8               | 4     |Same as Trial 12, SM kernel profiled
+|26         |   4096      | 8               | 32     |Same as Trial 15, SM kernel profiled
+|27         |   4096      | 8               | 4     |Same as Trial 12, Vec kernel profiled
+|28         |   4096      | 32               | 32     |Same as Trial 18, Vec kernel profiled
 --------------------------------------------------------------------------------------
 # Memory Access Violation
 In-depth call stack for above errors below, using improper tile dimensions for the number of threads per block causes memory access violations due to probably misaligment.
