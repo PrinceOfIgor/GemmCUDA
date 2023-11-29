@@ -1,5 +1,5 @@
 # GemmCUDA
-# Alexandru Barsan 2023 for ECE 718
+## Alexandru Barsan 2023 for ECE 718
 
 
 # Machine Specifications  
