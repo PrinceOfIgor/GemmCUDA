@@ -4,9 +4,9 @@
 
 # Machine Specifications  
 
-CPU: Intel i7-7700K
-GPU: Nvidia Geforce GTX 1080 Ti
-RAM: DDR4 16 GB Memory size 1200 MHz DRAM Freq
+CPU: Intel i7-7700K  
+GPU: Nvidia Geforce GTX 1080 Ti  
+RAM: DDR4 16 GB Memory size 1200 MHz DRAM Freq  
 
 Found 1 CUDA devices  
 id 0    b'NVIDIA GeForce GTX 1080 Ti'                              [SUPPORTED]  
