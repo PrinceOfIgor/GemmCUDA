@@ -189,7 +189,7 @@ def main():
     
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
-    threadsperblock = (32, 32)
+    threadsperblock = (16, 16)
     num_runs = 10
     
     #Randomized initial matrices, numba CUDA works with numpy arrays
