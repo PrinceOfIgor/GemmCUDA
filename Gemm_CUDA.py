@@ -2,8 +2,7 @@ import numpy as np
 import pandas
 from numba import cuda, float32, jit
 from cuda import cuda as cupy
-import pyculib as cublas
-import mkl as mkl
+#from pyculib import blas 
 import sys
 import time
 import CUDAKernels as ck

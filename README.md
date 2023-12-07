@@ -47,6 +47,8 @@ pip install cuda-python
 
 pip install mkl
 
+pip install scipy
+
 pip install pyculib
 
 

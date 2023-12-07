@@ -2,6 +2,6 @@
   "ExpandedNodes": [
     ""
   ],
-  "SelectedNode": "\\CUDAKernels.py",
+  "SelectedNode": "\\Gemm_CUDA.py",
   "PreviewInSolutionExplorer": false
 }
