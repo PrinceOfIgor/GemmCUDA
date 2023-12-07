@@ -1,5 +1,7 @@
 import numpy as np
 from numba import cuda, float32, jit
+import pyculib as cublas
+import mkl as mkl
 import math
 import sys
 import time
@@ -159,3 +161,6 @@ def cuda_gemm_vec_kernel(A, B, C):
 
     if i < C.shape[0] and j < C.shape[1]:
         C[i, j] = C_value
+
+
+def cuda_cublas(A,B,C):

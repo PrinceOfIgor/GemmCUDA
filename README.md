@@ -24,6 +24,10 @@ pip install pypiwin32
 
 pip install cuda-python
 
+pip install mkl
+
+pip install pyculib
+
 
 # Running with different matrix sizes:
 e.g. 
@@ -74,6 +78,13 @@ nvprof python Gemm_CUDA.py 4096 4096 4096
 |26         |   4096      | 8               | 32     |Same as Trial 15, SM kernel profiled
 |27         |   4096      | 8               | 4     |Same as Trial 12, Vec kernel profiled
 |28         |   4096      | 32               | 32     |Same as Trial 18, Vec kernel profiled
+|30			    |	32		      |			16		        |		16	   |Re-run for MKL and cuBLAS implementations|
+|31		        |	64		      |			16		        |		16	   |Re-run for MKL and cuBLAS implementations|
+|32			    |	128		      |			16		        |		16	   |Re-run for MKL and cuBLAS implementations|
+|33			    |	256		      |			16		        |		16	   |Re-run for MKL and cuBLAS implementations|
+|34			    |	512		      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations|
+|35			    |	1024	      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations|
+|36			    |	4096	      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations|
 --------------------------------------------------------------------------------------
 # Memory Access Violation
 In-depth call stack for above errors below, using improper tile dimensions for the number of threads per block causes memory access violations due to probably misaligment.

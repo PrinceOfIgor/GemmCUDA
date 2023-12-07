@@ -2,6 +2,8 @@ import numpy as np
 import pandas
 from numba import cuda, float32, jit
 from cuda import cuda as cupy
+import pyculib as cublas
+import mkl as mkl
 import sys
 import time
 import CUDAKernels as ck
@@ -186,10 +188,12 @@ def main():
         print(f"Running with A as {m}x{n} and B as {n}x{k} sized matrices")
 
     CudaInfo()
+    #See if Numpy is properly linked with MKL
+    print(np.__config__.show())
     
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
-    threadsperblock = (32, 32)
+    threadsperblock = (16, 16)
     num_runs = 10
     
     #Randomized initial matrices, numba CUDA works with numpy arrays
@@ -233,32 +237,32 @@ def main():
     print("Naive implementation")
      #Naive GEMM
     start = time.time()
-    for _ in range(num_runs):
+    #for _ in range(num_runs):
         #print(_)
-        naive_matrix_mul(A, B)
+   #     naive_matrix_mul(A, B)
     end = time.time()
     naive_time = end - start
     
     print("Naive implementation with JIT")
     #naive matrix mult with numba
     start = time.time()
-    for _ in range(num_runs):
+   # for _ in range(num_runs):
         #print(_)
-        naive_matrix_mul_numba(A, B)
+   #     naive_matrix_mul_numba(A, B)
     end = time.time()
     naive_time_numba = end - start
     print("Naive implementation with JIT and loop reordering")
     #ikj matrix mult with numba
     start = time.time()
-    for _ in range(num_runs):
+   # for _ in range(num_runs):
         #print(_)
-        ikj_matrix_mul_numba(A, B)
+    #    ikj_matrix_mul_numba(A, B)
     end = time.time()
     ikj_time_numba = end - start
     
     trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time, cuda_vec_time]
 
-    save_trial(trialTimes)    
+    #save_trial(trialTimes)    
 
     #Overall time
     print('naive time: {}'.format(naive_time))
