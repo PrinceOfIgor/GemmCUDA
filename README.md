@@ -1,11 +1,32 @@
 # GemmCUDA
-# Alexandru Barsan 2023 for ECE 718
+## Alexandru Barsan 2023 for ECE 718
 
 
-# Machine Specifications
-CPU: Intel i7-7700K
-GPU: Nvidia Geforce GTX 1080 Ti
-RAM: DDR4 16 GB Memory size 1200 MHz DRAM Freq
+# Machine Specifications  
+
+CPU: Intel i7-7700K  
+GPU: Nvidia Geforce GTX 1080 Ti  
+RAM: DDR4 16 GB Memory size 1200 MHz DRAM Freq  
+
+Found 1 CUDA devices  
+id 0    b'NVIDIA GeForce GTX 1080 Ti'                              [SUPPORTED]  
+                      Compute Capability: 6.1  
+                           PCI Device ID: 0  
+                              PCI Bus ID: 1  
+                                    UUID: GPU-d9ff490e-0dae-b9ff-d914-d72433dae551  
+                                Watchdog: Enabled  
+                            Compute Mode: WDDM  
+             FP32/FP64 Performance Ratio: 32  
+Summary:  
+        1/1 devices are supported   
+Device Name: NVIDIA GeForce GTX 1080 Ti                                                                                   
+Maximum number of multiprocessors: 28  
+Maximum number of threads per block:       1024  
+Maximum number of blocks per grid:         1024  
+Maximum number of threads per grid:  2147483647  
+Maximum shared memory per block:  49152 bytes  
+Warp Size:  32  
+L2 Cache Size:  2883584 bytes  
 
 # Prerequsites:
 A NVIDIA CUDA capable graphics card, reference can be found here: https://developer.nvidia.com/cuda-gpus
