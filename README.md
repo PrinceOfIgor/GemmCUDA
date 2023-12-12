@@ -52,11 +52,16 @@ conda install -c nvidia cuda-python
 
 conda install -c conda-forge openpyxl
 
+conda install -c libffi  Pandas doesn't load this dependency properly
 
-## TODO: Add exported conda environment once all is said and done to make it easier to run...
+## Create and active from the environment.yml (will take some time to install all dependencies)
+
+conda env create -f environment.yml
+
+conda activate GemmCUDA
 
 # Running with different matrix sizes:
-e.g. 
+From the Anaconda admin prompt, navigate to the repo:
 python Gemm_CUDA.py 4096 4096 4096  
 
 ## Profiling (most useful if running just one kernel)

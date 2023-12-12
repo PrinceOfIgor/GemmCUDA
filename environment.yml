@@ -1,4 +1,4 @@
-name: CondaMKL
+name: GemmCUDA
 channels:
   - nvidia
   - intel
@@ -50,7 +50,7 @@ dependencies:
   - libcusolver-dev=11.5.4.101=0
   - libcusparse=12.2.0.103=0
   - libcusparse-dev=12.2.0.103=0
-  - libffi=3.4.2=h8ffe710_5
+  - libffi=3.4.4=hd77b12b_0
   - libnpp=12.2.3.2=0
   - libnpp-dev=12.2.3.2=0
   - libnvjitlink=12.3.101=0
@@ -89,4 +89,4 @@ dependencies:
   - wheel=0.41.3=pyhd8ed1ab_0
   - xz=5.4.5=h8cc25b3_0
   - zlib=1.2.13=h8cc25b3_0
-prefix: C:\Users\barsana\.conda\envs\CondaMKL
+
