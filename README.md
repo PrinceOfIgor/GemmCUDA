@@ -33,24 +33,27 @@ A NVIDIA CUDA capable graphics card, reference can be found here: https://develo
 
 The NVIDIA CUDA toolkit, can be found here: https://developer.nvidia.com/cuda-toolkit
 
+The oneMKL Python distribution, can be found here: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html?operatingsystem=window&distributions=online
 
 # The following python libraries:
-pip install openpyxl
+Switched over to Anaconda since apparently numpy uses MKL natively from Conda but not from pip...
 
-pip install numpy
+Can be found: https://www.anaconda.com/download
 
-pip install numba
+Then from an Administrator Anaconda prompt:
 
-pip install pypiwin32
+conda install -c numpy
 
-pip install cuda-python
+conda install -c numba
 
-pip install mkl
+conda install -c nvidia cuda-toolkit
 
-pip install scipy
+conda install -c nvidia cuda-python
 
-pip install pyculib
+conda install -c conda-forge openpyxl
 
+
+## TODO: Add exported conda environment once all is said and done to make it easier to run...
 
 # Running with different matrix sizes:
 e.g. 

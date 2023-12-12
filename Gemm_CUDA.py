@@ -2,7 +2,6 @@ import numpy as np
 import pandas
 from numba import cuda, float32, jit
 from cuda import cuda as cupy
-#from pyculib import blas 
 import sys
 import time
 import CUDAKernels as ck
@@ -188,7 +187,8 @@ def main():
 
     CudaInfo()
     #See if Numpy is properly linked with MKL
-    print(np.__config__.show())
+    #print(np.__config__.show())
+    print(np.show_config())
     
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
