@@ -86,6 +86,12 @@ def ikj_matrix_mul_numba(A,B):
                 C[i, j] += A[i, k] * B[k, j]
     return C
 
+#MKL numpy matrix multiplication
+
+#cuBLAS kernel call
+
+
+
 def save_trial(trialTimes):
     
     excel_filename = "trials.xlsx"
