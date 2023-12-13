@@ -35,9 +35,9 @@ The NVIDIA CUDA toolkit, can be found here: https://developer.nvidia.com/cuda-to
 The oneMKL Python distribution, can be found here: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html?operatingsystem=window&distributions=online
 
 # The following python libraries:
-Switched over to Anaconda since apparently numpy uses MKL natively from Conda but not from pip...
-
-Can be found: https://www.anaconda.com/download
+> Switched over to Anaconda since apparently **numpy uses MKL natively from Conda** but not from pip...
+> 
+> Can be found: https://www.anaconda.com/download
 
 Then from an Administrator Anaconda prompt:
 
@@ -59,8 +59,10 @@ conda install -c libffi  Pandas doesn't load this dependency properly
 
 conda install -c cupy
 
-## Create and activate from the environment.yml (will take some time to install all dependencies)
-## Cupy required downgrading to Python 3.9.18, please import the environment using Anaconda and profit from my headaches
+ > Create and activate from the environment.yml (will take some time to install all dependencies)
+ >
+ > Cupy required downgrading to Python 3.9.18, the switchover to Anaconda was also interesting to say the least.
+ > Please import the environment using Anaconda and profit from my headaches
 
 conda env create -f environment.yml
 
