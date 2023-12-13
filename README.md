@@ -42,6 +42,10 @@ Can be found: https://www.anaconda.com/download
 
 Then from an Administrator Anaconda prompt:
 
+conda create --name GemmCUDA
+
+conda activate GemmCUDA
+
 conda install -c numpy
 
 conda install -c numba
@@ -54,7 +58,10 @@ conda install -c conda-forge openpyxl
 
 conda install -c libffi  Pandas doesn't load this dependency properly
 
+conda install -c cupy
+
 ## Create and active from the environment.yml (will take some time to install all dependencies)
+## Cupy required downgrading to Python 3.9.18, please import the environment using Anaconda and profit from my headaches
 
 conda env create -f environment.yml
 
@@ -73,6 +80,7 @@ nvprof python Gemm_CUDA.py 4096 4096 4096
 - All trials will compare against naive GEMM with numba JIT and loop re-ordered GEMM with numba JIT
 - Threads Per Block affects all 4 kernels, TILE_DIM affects just shared memory caching and vectorized kernels, Trials 8 to 23 will only compare the GPU kernels
 - Profiling done on some interesting trials/kernels for trials 24 - 28
+- MKL and CuBLAS implementations are trials 30 - 36 for the same matrix sizes as 1-7, no other changes needed since they are optimised kernels already
 
 |Trial #	  | Matrix Size | Threads Per Block | TILE_DIM |  Comment |
 |-----------|-------------|-------------------|----------|----------|

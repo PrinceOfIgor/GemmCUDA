@@ -1,7 +1,8 @@
 import numpy as np
 import pandas
 from numba import cuda, float32, jit
-from cuda import cuda as cupy
+from cuda import cuda as cupy #Not to be confused for actual cupy, names can be updated later
+import cupy as cp
 import sys
 import time
 import CUDAKernels as ck
@@ -19,31 +20,31 @@ def cuda_gemm(A, B, threadsperblock, k_type):
     blockspergrid_y = (n + threadsperblock[1] - 1) // threadsperblock[1]
     blockspergrid = (blockspergrid_x, blockspergrid_y)
  
-    match k_type:
-        case "Naive":
-            start = time.time()
-            #Initiate the kernel call with the request blocks
-            ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
-            end = time.time()
-            print(f"Time for naive kernel: {end-start}")
-        case "Global Memory Coalescing":
-            start = time.time()
-            #Initiate the kernel call with the request blocks
-            ck.cuda_gmc_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
-            end = time.time()
-            print(f"Time for GMC kernel: {end-start}")
-        case "Shared Memory Caching":
-            start = time.time()
-            #Initiate the kernel call with the request blocks
-            ck.cuda_gemm_smc_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
-            end = time.time()
-            print(f"Time for SMC kernel: {end-start}")
-        case "Vectorized":
-            start = time.time()
-            #Initiate the kernel call with the request blocks
-            ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
-            end = time.time()
-            print(f"Time for Vectorized kernel: {end-start}")
+   
+    if k_type == "Naive":
+        start = time.time()
+        #Initiate the kernel call with the request blocks
+        ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+        end = time.time()
+        print(f"Time for naive kernel: {end-start}")
+    elif k_type == "Global Memory Coalescing":
+        start = time.time()
+        #Initiate the kernel call with the request blocks
+        ck.cuda_gmc_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+        end = time.time()
+        print(f"Time for GMC kernel: {end-start}")
+    elif k_type == "Shared Memory Caching":
+        start = time.time()
+        #Initiate the kernel call with the request blocks
+        ck.cuda_gemm_smc_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+        end = time.time()
+        print(f"Time for SMC kernel: {end-start}")
+    elif k_type == "Vectorized":
+        start = time.time()
+        #Initiate the kernel call with the request blocks
+        ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
+        end = time.time()
+        print(f"Time for Vectorized kernel: {end-start}")
             
     #print(C_global.shape)
     #cuda.synchronize()
@@ -87,9 +88,42 @@ def ikj_matrix_mul_numba(A,B):
     return C
 
 #MKL numpy matrix multiplication
+def mkl_gemm(A,B):
+    assert A.shape[1] == B.shape[0]
+    C = np.zeros((A.shape[0], B.shape[1]))
+    #MKL is linked to NumPy already, can just do a dot product directly.
+    C = np.dot(A,B)
+    
+    return C
+
+#Numba JIT definitely doesn't like this.
+#@jit(nopython=True)
+#def jit_mkl_gemm(A,B):
+#    assert A.shape[1] == B.shape[0]
+#    C = np.zeros((A.shape[0], B.shape[1]))
+#    #MKL is linked to NumPy already, can just do a dot product directly.
+#    C = np.dot(A,B)
+#    
+#    return C
 
 #cuBLAS kernel call
+def cublas_gemm(A,B):
+    #CuPy CuBLAS handles the CUDA grid configuration and other optimizations implicitly
+    m, k = A.shape
+    k, n = B.shape
+    #Allocate GPU memory, ensure it is float32 for cuBLAS... pull it out into the Gemm_CUDA call to have setup outside of the main blas anyway.
+    A_gpu = cp.asarray(A)
+    B_gpu = cp.asarray(B)
+    C_gpu = cp.zeros((m, n), dtype=cp.float32)
 
+    # Perform GEMM using cuBLAS
+    C_gpu = cp.matmul(A_gpu, B_gpu)
+
+    #Transfer the result back to the host (CPU)
+    C_cpu_result = cp.asnumpy(C_gpu)
+    
+    #Since everything will be passed in, return just C after changing
+    return C_cpu_result
 
 
 def save_trial(trialTimes):
@@ -101,7 +135,7 @@ def save_trial(trialTimes):
         df = pandas.read_excel(excel_filename)
     except FileNotFoundError:
         # If the file doesn't exist, create a new DataFrame, expand with more times as required
-        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time naive', 'CUDA Time Global Memory Coalescing', 'CUDA Time Shared Memory Caching', 'CUDA Time Vectorized'])
+        df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time naive', 'CUDA Time Global Memory Coalescing', 'CUDA Time Shared Memory Caching', 'CUDA Time Vectorized', 'MKL Time', 'CuBLAS Time'])
     
         # Get the current trial name from the last row in the DataFrame (if it exists)
     if not df.empty:
@@ -121,7 +155,9 @@ def save_trial(trialTimes):
         'CUDA Time naive' : [trialTimes[3]],
         'CUDA Time Global Memory Coalescing' : [trialTimes[4]],
         'CUDA Time Shared Memory Caching' : [trialTimes[5]],
-        'CUDA Time Vectorized' : [trialTimes[6]]
+        'CUDA Time Vectorized' : [trialTimes[6]],
+        'MKL Time' : [trialTimes[7]],
+        'CuBLAS Time' : [trialTimes[8]]
         })
     
     
@@ -225,15 +261,15 @@ def main():
     #Run against the GPU with shared memory caching
     start = time.time()
    # for _ in range(num_runs):
-    #    result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
+   #     result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
     end = time.time()
     cuda_smc_time = end - start
     print("-----------------")
     
     #Run against the GPU with vectorization
     start = time.time()
-   # for _ in range(num_runs):
-  #      result = cuda_gemm(A, B, threadsperblock, "Vectorized")
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Vectorized")
     end = time.time()
     cuda_vec_time = end - start
     print("-----------------")
@@ -265,9 +301,35 @@ def main():
     end = time.time()
     ikj_time_numba = end - start
     
-    trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time, cuda_vec_time]
+    print("MKL implementation")
+   #MKL gemm
+    start = time.time()
+    for _ in range(num_runs):
+        #print(_)
+        mkl_gemm(A, B)
+    end = time.time()
+    mkl_gemm_time = end - start
+    
+    #MKL JIT gemm
+    #start = time.time()
+    #for _ in range(num_runs):
+        #print(_)
+    #    jit_mkl_gemm(A, B)
+    #end = time.time()
+    #jit_mkl_gemm_time = end - start
 
-    #save_trial(trialTimes)    
+    print("CuBLAS implementation")
+    #CuBLAS gemm
+    start = time.time()
+    for _ in range(num_runs):
+        #print(_)
+        cublas_gemm(A, B)
+    end = time.time()
+    cublas_gemm_time = end - start
+    
+    trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time, cuda_vec_time, mkl_gemm_time, cublas_gemm_time]
+
+    save_trial(trialTimes)    
 
     #Overall time
     print('naive time: {}'.format(naive_time))
@@ -277,6 +339,9 @@ def main():
     print('CUDA GMC time : {}'.format(cuda_gmc_time))
     print('CUDA SMC time : {}'.format(cuda_smc_time))
     print('CUDA Vec time : {}'.format(cuda_vec_time))
+    print('MKL Time : {}'.format(mkl_gemm_time))
+    #print('MKL JIT Time : {}'.format(jit_mkl_gemm_time))
+    print('CuBLAS Time : {}'.format(cublas_gemm_time))
     
 
 main()

@@ -5,7 +5,7 @@ channels:
   - defaults
 dependencies:
   - blas=1.0=mkl
-  - bottleneck=1.3.5=py310h9128911_0
+  - bottleneck=1.3.5=py39h080aedc_0
   - bzip2=1.0.8=vc14h5832a3a_5
   - ca-certificates=2023.08.22=haa95532_0
   - cuda-cccl=12.3.101=0
@@ -32,12 +32,16 @@ dependencies:
   - cuda-opencl=12.3.101=0
   - cuda-opencl-dev=12.3.101=0
   - cuda-profiler-api=12.3.101=0
-  - cuda-python=11.6.0=py310h9a6739d_0
+  - cuda-python=12.3.0=py39h75f2f29_0
   - cuda-sanitizer-api=12.3.101=0
   - cuda-toolkit=12.3.1=0
   - cuda-tools=12.3.1=0
   - cuda-visual-tools=12.3.1=0
-  - cudatoolkit=11.5.0=hfde6d1b_9
+  - cudatoolkit=10.1.243=h74a9793_0
+  - cudnn=7.6.5=cuda10.1_0
+  - cupy=8.3.0=py39hd4ca531_0
+  - et_xmlfile=1.1.0=py39haa95532_0
+  - fastrlock=0.6=py39hd77b12b_0
   - intel-openmp=2023.1.0=h59b6b97_46320
   - intelpython=2024.0.0=0
   - libcublas=12.3.4.1=0
@@ -58,24 +62,26 @@ dependencies:
   - libnvjpeg=12.3.0.81=0
   - libnvjpeg-dev=12.3.0.81=0
   - libsqlite=3.44.0=hcfcfb64_0
-  - llvmlite=0.41.0=py310hf2fb9eb_0
+  - llvmlite=0.38.0=py39h23ce68f_0
   - mkl=2023.1.0=h6b88ed4_46358
-  - mkl-service=2.4.0=py310h2bbff1b_1
-  - mkl_fft=1.3.8=py310h2bbff1b_0
-  - mkl_random=1.2.4=py310h59b6b97_0
+  - mkl-service=2.4.0=py39h2bbff1b_1
+  - mkl_fft=1.3.8=py39h2bbff1b_0
+  - mkl_random=1.2.4=py39h59b6b97_0
   - nsight-compute=2023.3.1.1=0
-  - numba=0.58.1=py310hd77b12b_0
-  - numexpr=2.8.7=py310h2cd9be0_0
-  - numpy=1.26.2=py310h055cbcc_0
-  - numpy-base=1.26.2=py310h65a83cf_0
+  - numba=0.55.1=py39hf11a4ad_0
+  - numexpr=2.8.7=py39h2cd9be0_0
+  - numpy=1.21.5=py39h6917f2d_4
+  - numpy-base=1.21.5=py39h46c4fa8_4
+  - openpyxl=3.0.10=py39h2bbff1b_0
   - openssl=3.0.12=h2bbff1b_0
-  - pandas=2.1.4=py310h4ed8f06_0
+  - pandas=2.0.3=py39h4ed8f06_0
   - pip=23.3.1=pyhd8ed1ab_0
-  - python=3.10.13=he1021f5_0
+  - python=3.9.18=h1aa4202_0
   - python-dateutil=2.8.2=pyhd3eb1b0_0
   - python-tzdata=2023.3=pyhd3eb1b0_0
-  - pytz=2023.3.post1=py310haa95532_0
-  - pywin32=305=py310h2bbff1b_0
+  - python_abi=3.9=2_cp39
+  - pytz=2023.3.post1=py39haa95532_0
+  - pywin32=305=py39h2bbff1b_0
   - setuptools=68.2.2=pyhd8ed1ab_0
   - six=1.16.0=pyhd3eb1b0_1
   - sqlite=3.41.2=h2bbff1b_0
