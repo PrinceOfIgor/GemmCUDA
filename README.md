@@ -1,6 +1,5 @@
 # GemmCUDA
-## Alexandru Barsan 2023 for ECE 718
-
+## Alexandru Barsan 2023
 
 # Machine Specifications  
 
@@ -54,18 +53,19 @@ conda install -c nvidia cuda-toolkit
 
 conda install -c nvidia cuda-python
 
-conda install -c conda-forge openpyxl
+conda install -c openpyxl
 
 conda install -c libffi  Pandas doesn't load this dependency properly
 
 conda install -c cupy
 
-## Create and active from the environment.yml (will take some time to install all dependencies)
+## Create and activate from the environment.yml (will take some time to install all dependencies)
 ## Cupy required downgrading to Python 3.9.18, please import the environment using Anaconda and profit from my headaches
 
 conda env create -f environment.yml
 
 conda activate GemmCUDA
+
 
 # Running with different matrix sizes:
 From the Anaconda admin prompt, navigate to the repo:
