@@ -244,24 +244,24 @@ def main():
     
     #Run against the GPU naively
     start = time.time()    
-  #  for _ in range(num_runs):
-   #     result = cuda_gemm(A, B, threadsperblock, "Naive")
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Naive")
     end = time.time()
     cuda_time = end - start
     print("-----------------")
     
     #Run against the GPU with global memory coalesced access
     start = time.time()
-   # for _ in range(num_runs):
-   #     result = cuda_gemm(A, B, threadsperblock, "Global Memory Coalescing")
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Global Memory Coalescing")
     end = time.time()
     cuda_gmc_time = end - start
     print("-----------------")
     
     #Run against the GPU with shared memory caching
     start = time.time()
-   # for _ in range(num_runs):
-   #     result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
+    for _ in range(num_runs):
+        result = cuda_gemm(A, B, threadsperblock, "Shared Memory Caching")
     end = time.time()
     cuda_smc_time = end - start
     print("-----------------")

@@ -124,6 +124,8 @@ nvprof python Gemm_CUDA.py 4096 4096 4096
 |34			    |	512		      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations|
 |35			    |	1024	      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations|
 |36			    |	4096	      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations|
+|37			    |	8192	      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations compare with CUDA kernels for curiosity's sake|
+|38			    |	16384	      |			16		  |		16	 |Re-run for MKL and cuBLAS implementations compare with CUDA kernels for curiosity's sake|
 --------------------------------------------------------------------------------------
 # Memory Access Violation
 In-depth call stack for above errors below, using improper tile dimensions for the number of threads per block causes memory access violations due to probably misaligment.
