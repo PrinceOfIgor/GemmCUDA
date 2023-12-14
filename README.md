@@ -1,6 +1,5 @@
 # GemmCUDA
-## Alexandru Barsan 2023 for ECE 718
-
+## Alexandru Barsan 2023
 
 # Machine Specifications  
 
@@ -36,9 +35,9 @@ The NVIDIA CUDA toolkit, can be found here: https://developer.nvidia.com/cuda-to
 The oneMKL Python distribution, can be found here: https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html?operatingsystem=window&distributions=online
 
 # The following python libraries:
-Switched over to Anaconda since apparently numpy uses MKL natively from Conda but not from pip...
-
-Can be found: https://www.anaconda.com/download
+> Switched over to Anaconda since apparently **numpy uses MKL natively from Conda** but not from pip...
+> 
+> Can be found: https://www.anaconda.com/download
 
 Then from an Administrator Anaconda prompt:
 
@@ -54,18 +53,21 @@ conda install -c nvidia cuda-toolkit
 
 conda install -c nvidia cuda-python
 
-conda install -c conda-forge openpyxl
+conda install -c openpyxl
 
 conda install -c libffi  Pandas doesn't load this dependency properly
 
 conda install -c cupy
 
-## Create and active from the environment.yml (will take some time to install all dependencies)
-## Cupy required downgrading to Python 3.9.18, please import the environment using Anaconda and profit from my headaches
+ > Create and activate from the environment.yml (will take some time to install all dependencies)
+ >
+ > Cupy required downgrading to Python 3.9.18, the switchover to Anaconda was also interesting to say the least.
+ > Please import the environment using Anaconda and profit from my headaches
 
 conda env create -f environment.yml
 
 conda activate GemmCUDA
+
 
 # Running with different matrix sizes:
 From the Anaconda admin prompt, navigate to the repo:
