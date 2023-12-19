@@ -1,3 +1,6 @@
+#Alexandru Barsan
+#NOTE CuBLAS is a wrapper call to its own underlying kernel setup code, has been moved out of this routine
+#Module containing the CUDA kernels
 import numpy as np
 from numba import cuda, float32
 import math
@@ -5,7 +8,7 @@ import sys
 import time
 
 
-#Module containing the CUDA kernels
+
 
 #Naive kernel function for GPU
 @cuda.jit
@@ -52,22 +55,24 @@ def cuda_gmc_gemm_kernel(A, B, C):
 @cuda.jit
 def cuda_gemm_smc_kernel(A, B, C):
     i, j = cuda.grid(2)
-    
+    #Define thread indices
     tx = cuda.threadIdx.x
     ty = cuda.threadIdx.y
-    
+    #define block indices
     bx = cuda.blockIdx.x
     by = cuda.blockIdx.y
-    
+    #define block limits
     blockDim_x = cuda.blockDim.x
     blockDim_y = cuda.blockDim.y
-    
+    #define grid limits
     gridDim_x = cuda.gridDim.x
     gridDim_y = cuda.gridDim.y
 
     # Define shared memory for caching
     TILE_DIM = 16
     TILE_SIZE = TILE_DIM * TILE_DIM
+    
+    #Copy into shared memory
     A_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
     B_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
 
@@ -92,9 +97,11 @@ def cuda_gemm_smc_kernel(A, B, C):
         #As with general memory coalescing, sync threads for each warp
         cuda.syncthreads()
 
+        #Final value calculation
         for k in range(TILE_DIM):
             C_value += A_smem[x, k] * B_smem[k, y]
-
+        
+        #Synchronize threads again for resultant
         cuda.syncthreads()
     
     if i < C.shape[0] and j < C.shape[1]:
@@ -104,26 +111,27 @@ def cuda_gemm_smc_kernel(A, B, C):
 @cuda.jit
 def cuda_gemm_vec_kernel(A, B, C):
     i, j = cuda.grid(2)
-    
+    #Define thread indices
     tx = cuda.threadIdx.x
     ty = cuda.threadIdx.y
-    
+    #define block indices
     bx = cuda.blockIdx.x
     by = cuda.blockIdx.y
-    
+    #define block limits
     blockDim_x = cuda.blockDim.x
     blockDim_y = cuda.blockDim.y
-    
+    #define grid limits
     gridDim_x = cuda.gridDim.x
     gridDim_y = cuda.gridDim.y
 
     # Define shared memory for caching
     TILE_DIM = 16
     TILE_SIZE = TILE_DIM * TILE_DIM
+     #Copy into shared memory
     A_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
     B_smem = cuda.shared.array((TILE_DIM, TILE_DIM), float32)
 
-    # Use float4 for vectorized memory access
+    # Use float4 for vectorized memory access, double2 is also supported
     float4_type = float32[:4]
     A_smem_vec = cuda.local.array((TILE_DIM // 4, TILE_DIM), float4_type)
     B_smem_vec = cuda.local.array((TILE_DIM, TILE_DIM // 4), float4_type)
@@ -149,8 +157,10 @@ def cuda_gemm_vec_kernel(A, B, C):
         for k in range(0, TILE_DIM, 4):
             A_smem_vec[x // 4, k] = A_smem[tx, k:k+4]
             B_smem_vec[k, y // 4] = B_smem[k:k+4, ty]
-
+            
+        #sync threads for each warp
         cuda.syncthreads()
+        
         #Access each value in the vectorized memory and compute
         for k in range(TILE_DIM // 4):
             C_value += math.fmaf(A_smem_vec[k, ty // 4], B_smem_vec[tx // 4, k], C_value)
