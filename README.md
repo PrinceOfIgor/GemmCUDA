@@ -1,4 +1,4 @@
-# GemmCUDA
+# MatMultCUDA
 ## Alexandru Barsan 2023
 
 # Machine Specifications  

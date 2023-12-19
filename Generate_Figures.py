@@ -2,6 +2,7 @@
 #This will generate Matlab-like plots that look a little nicer than excel's
 #Summarized/investigated data is in Summarized Trials.xlsx
 #Import used libraries
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,6 +10,47 @@ import matplotlib.pyplot as plt
 #Load the data into a dataframe for parsing
 trials_path = 'trials.xlsx'
 dfTrials = pd.read_excel(trials_path)
+#print(dfTrials)
+#Calculate GFLOPS/s for comparison with C++ implementations
+#All calculated for 4096x4096 case
+total_flops = 2*4096**3
+#print(total_flops)
+#print(dfTrials.iloc[6,1])
+#Cherry pick best times for 4096x4096 since our focus is optimization of our kernels (i.e. CUDA hyperparameters of threads per block and tile_dim)
+naiveT = dfTrials.iloc[6,1]
+naiveJIT_T = dfTrials.iloc[6,2]
+naiveReordT =  dfTrials.iloc[6,3]
+cudaBasicT =  dfTrials.iloc[13,4] #Trial 14 Threads Per Block: 8, Tile Dim: 16
+gmcT = dfTrials.iloc[11,5] #Trial 12 Threads Per Block: 8, Tile Dim: 4
+smcT = dfTrials.iloc[11,6] #Trial 12 Threads Per Block: 8, Tile Dim: 4
+vecT = dfTrials.iloc[11,7]  #Trial 12 Threads Per Block: 8, Tile Dim: 4
+MKL_T = dfTrials.iloc[35,8] #Trial 36
+cuBLAS_T = dfTrials.iloc[35,9] #Trial 36
+
+#Calculate final GFLOPS
+#print(naiveT)
+naive_GFLOPS = total_flops / (naiveT * 1e9)
+naiveJIT_GFLOPS = total_flops / (naiveJIT_T * 1e9)
+naiveReord_GFLOPS = total_flops / (naiveReordT * 1e9)
+cudaBasic_GFLOPS = total_flops / (cudaBasicT * 1e9)
+gmc_GFLOPS = total_flops / (gmcT * 1e9)
+smc_GFLOPS = total_flops / (smcT * 1e9)
+vec_GFLOPS = total_flops / (vecT * 1e9)
+MKL_GFLOPS = total_flops / (MKL_T * 1e9)
+cuBLAS_GFLOPS = total_flops / (cuBLAS_T * 1e9)
+
+print("GFLOPS/s for 4096x4096 matrix")
+print("Naive: {}".format(naive_GFLOPS))
+print("JIT: {}".format(naiveJIT_GFLOPS))
+print("Loop Reordered JIT: {}".format(naiveReord_GFLOPS))
+print("Basic CUDA Kernel: {}".format(cudaBasic_GFLOPS))
+print("General Memory Coalescing: {}".format(gmc_GFLOPS))
+print("Shared Memory Caching: {}".format(smc_GFLOPS))
+print("Vectorized Kernel: {}".format(vec_GFLOPS))
+print("MKL: {}".format(MKL_GFLOPS))
+print("cuBLAS: {}".format(cuBLAS_GFLOPS))
+
+#exit()
 
 #Comparative graphs for naive python implementations and CUDA implementations
 #See README.md for a breakdown of the trials
