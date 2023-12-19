@@ -1,7 +1,11 @@
+#Alexandru Barsan 2023
+#NOTE this will not work properly unless you first installed Anaconda for MKL support, have an Nvidia GPU with CUDA compute compatibility
+#PLEASE SEE THE README
+#Import all required libraries
 import numpy as np
 import pandas
 from numba import cuda, float32, jit
-from cuda import cuda as cupy #Not to be confused for actual cupy, names can be updated later
+from cuda import cuda as cupy #Not to be confused for actual cupy.. cuda python shortening
 import cupy as cp
 import sys
 import time
@@ -199,8 +203,7 @@ def CudaInfo():
     err, L2Size = cupy.cuDeviceGetAttribute(
         cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE, 0
     )
-    
-    
+     
 
     print(f"Device Name: {DEVICE_NAME}")
     print(f"Maximum number of multiprocessors: {SMs}")
@@ -229,7 +232,6 @@ def main():
 
     CudaInfo()
     #See if Numpy is properly linked with MKL
-    #print(np.__config__.show())
     print(np.show_config())
     
     #Initialize values
@@ -278,26 +280,26 @@ def main():
     print("Naive implementation")
      #Naive GEMM
     start = time.time()
-    #for _ in range(num_runs):
+    for _ in range(num_runs):
         #print(_)
-   #     naive_matrix_mul(A, B)
+        naive_matrix_mul(A, B)
     end = time.time()
     naive_time = end - start
     
     print("Naive implementation with JIT")
     #naive matrix mult with numba
     start = time.time()
-   # for _ in range(num_runs):
+    for _ in range(num_runs):
         #print(_)
-   #     naive_matrix_mul_numba(A, B)
+        naive_matrix_mul_numba(A, B)
     end = time.time()
     naive_time_numba = end - start
     print("Naive implementation with JIT and loop reordering")
     #ikj matrix mult with numba
     start = time.time()
-   # for _ in range(num_runs):
+    for _ in range(num_runs):
         #print(_)
-    #    ikj_matrix_mul_numba(A, B)
+        ikj_matrix_mul_numba(A, B)
     end = time.time()
     ikj_time_numba = end - start
     
@@ -310,6 +312,7 @@ def main():
     end = time.time()
     mkl_gemm_time = end - start
     
+    #Not possible, wanted to see what would happen.
     #MKL JIT gemm
     #start = time.time()
     #for _ in range(num_runs):
@@ -327,8 +330,9 @@ def main():
     end = time.time()
     cublas_gemm_time = end - start
     
+    #Save an array of the trial run
     trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time, cuda_vec_time, mkl_gemm_time, cublas_gemm_time]
-
+    #Call the save to excel function, this will save on every successful run through, comment out to just play around
     save_trial(trialTimes)    
 
     #Overall time

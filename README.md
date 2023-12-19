@@ -39,7 +39,7 @@ The oneMKL Python distribution, can be found here: https://www.intel.com/content
 > 
 > Can be found: https://www.anaconda.com/download
 
-Then from an Administrator Anaconda prompt:
+Then, to install packages manually, from an Administrator Anaconda prompt:
 
 conda create --name GemmCUDA
 
@@ -70,7 +70,7 @@ conda activate GemmCUDA
 
 
 # Running with different matrix sizes:
-From the Anaconda admin prompt, navigate to the repo:
+From the Anaconda admin prompt, navigate to the repo in the correct environment, then run the following commands:
 python Gemm_CUDA.py 4096 4096 4096  
 
 ## Profiling (most useful if running just one kernel)
