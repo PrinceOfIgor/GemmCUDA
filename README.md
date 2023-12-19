@@ -39,6 +39,8 @@ The oneMKL Python distribution, can be found here: https://www.intel.com/content
 > 
 > Can be found: https://www.anaconda.com/download
 
+## Manual library installation
+
 Then, to install packages manually, from an Administrator Anaconda prompt:
 
 conda create --name GemmCUDA
@@ -58,6 +60,8 @@ conda install -c openpyxl
 conda install -c libffi  Pandas doesn't load this dependency properly
 
 conda install -c cupy
+
+## Anaconda environment import
 
  > Create and activate from the environment.yml (will take some time to install all dependencies)
  >
