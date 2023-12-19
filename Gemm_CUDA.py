@@ -4,9 +4,9 @@
 #Import all required libraries
 import numpy as np
 import pandas
-from numba import cuda, float32, jit
-from cuda import cuda as cupy #Not to be confused for actual cupy.. cuda python shortening
-import cupy as cp
+from numba import cuda, float32, jit #Used for the actual kernel calls and kernels
+from cuda import cuda as cupy #Not to be confused for actual cupy.. cuda python shortening, also strictly to get some lower-level attributes from the card
+import cupy as cp #Just for cuBLAS
 import sys
 import time
 import CUDAKernels as ck
