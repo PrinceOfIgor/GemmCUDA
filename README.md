@@ -74,7 +74,7 @@ conda activate GemmCUDA
 
 
 # Running with different matrix sizes:
-From the Anaconda admin prompt, navigate to the repo in the correct environment, then run the following commands:
+From the Anaconda admin prompt, navigate to the repo in the correct environment, then run the following example command:
 python Gemm_CUDA.py 4096 4096 4096  
 
 ## Profiling (most useful if running just one kernel)
