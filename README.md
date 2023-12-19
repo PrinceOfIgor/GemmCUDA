@@ -1,4 +1,4 @@
-# MatMultCUDA
+# Matrix Multiplication using CUDA
 ## Alexandru Barsan 2023
 
 # Machine Specifications  

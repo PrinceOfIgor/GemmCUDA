@@ -7,9 +7,6 @@ import math
 import sys
 import time
 
-
-
-
 #Naive kernel function for GPU
 @cuda.jit
 def cuda_gemm_kernel(A, B, C):

@@ -135,7 +135,6 @@ plt.legend()
 plt.show()
 
 #Execution time comparison for our best approaches vs MKL and CuBLAS as well
-
 barLabels = ['CUDA Basic Kernel', 'General Memory Coalescing', 'Shared Memory Caching', 'Vectorized CUDA Kernel', 'MKL', 'CuBLAS']
 barVals = [cudaBasicT, gmcT, smcT, vecT, MKL_T, cuBLAS_T]
 

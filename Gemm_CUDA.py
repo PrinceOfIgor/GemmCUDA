@@ -11,6 +11,7 @@ import sys
 import time
 import CUDAKernels as ck
 
+#Set up the overall grid limits
 def cuda_gemm(A, B, threadsperblock, k_type):
 
     m, n = A.shape[0], B.shape[1]
