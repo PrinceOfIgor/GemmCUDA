@@ -23,8 +23,8 @@ def cuda_gemm(A, B, threadsperblock, k_type):
     blockspergrid_x = (m + threadsperblock[0] - 1) // threadsperblock[0]
     blockspergrid_y = (n + threadsperblock[1] - 1) // threadsperblock[1]
     blockspergrid = (blockspergrid_x, blockspergrid_y)
- 
-   
+
+
     if k_type == "Naive":
         start = time.time()
         #Initiate the kernel call with the request blocks
@@ -49,7 +49,7 @@ def cuda_gemm(A, B, threadsperblock, k_type):
         ck.cuda_gemm_kernel[blockspergrid, threadsperblock](A_global, B_global, C_global)
         end = time.time()
         print(f"Time for Vectorized kernel: {end-start}")
-            
+
     #print(C_global.shape)
     #cuda.synchronize()
 
@@ -97,7 +97,7 @@ def mkl_gemm(A,B):
     C = np.zeros((A.shape[0], B.shape[1]))
     #MKL is linked to NumPy already, can just do a dot product directly.
     C = np.dot(A,B)
-    
+
     return C
 
 #Numba JIT definitely doesn't like this.
@@ -107,7 +107,7 @@ def mkl_gemm(A,B):
 #    C = np.zeros((A.shape[0], B.shape[1]))
 #    #MKL is linked to NumPy already, can just do a dot product directly.
 #    C = np.dot(A,B)
-#    
+#
 #    return C
 
 #cuBLAS kernel call
@@ -125,37 +125,37 @@ def cublas_gemm(A,B):
 
     #Transfer the result back to the host (CPU)
     C_cpu_result = cp.asnumpy(C_gpu)
-    
+
     #Since everything will be passed in, return just C after changing
     return C_cpu_result
 
 
 def save_trial(trialTimes):
-    
+
     excel_filename = "trials.xlsx"
-    
+
     #Check if the file exists first
     try:
         df = pandas.read_excel(excel_filename)
     except FileNotFoundError:
         # If the file doesn't exist, create a new DataFrame, expand with more times as required
         df = pandas.DataFrame(columns=['Trial Name', 'Naive Time', 'Naive Time Numba', 'ikj Time Numba', 'CUDA Time naive', 'CUDA Time Global Memory Coalescing', 'CUDA Time Shared Memory Caching', 'CUDA Time Vectorized', 'MKL Time', 'CuBLAS Time'])
-    
+
         # Get the current trial name from the last row in the DataFrame (if it exists)
     if not df.empty:
         last_trial = df.iloc[-1]['Trial Name']
         trial_number = int(last_trial.split()[-1])
         trial_name = f'Trial {trial_number + 1}'
     else:
-        trial_name = 'Trial 1'   
-      
+        trial_name = 'Trial 1'
+
        #Set up the data frame with the passed in times
     new_data = pandas.DataFrame(
         {
         'Trial Name' : [trial_name],
-        'Naive Time' : [trialTimes[0]], 
-        'Naive Time Numba' : [trialTimes[1]], 
-        'ikj Time Numba' : [trialTimes[2]], 
+        'Naive Time' : [trialTimes[0]],
+        'Naive Time Numba' : [trialTimes[1]],
+        'ikj Time Numba' : [trialTimes[2]],
         'CUDA Time naive' : [trialTimes[3]],
         'CUDA Time Global Memory Coalescing' : [trialTimes[4]],
         'CUDA Time Shared Memory Caching' : [trialTimes[5]],
@@ -163,8 +163,8 @@ def save_trial(trialTimes):
         'MKL Time' : [trialTimes[7]],
         'CuBLAS Time' : [trialTimes[8]]
         })
-    
-    
+
+
     #Append the data frame to excel as a new row
     df = pandas.concat([df, new_data], ignore_index=True)
 
@@ -172,7 +172,7 @@ def save_trial(trialTimes):
     df.to_excel(excel_filename, index=False)
 
     print(f'Data saved to {excel_filename}')
-    
+
 def CudaInfo():
     cuda.detect()
     # Initialize CUDA Driver API
@@ -203,7 +203,7 @@ def CudaInfo():
     err, L2Size = cupy.cuDeviceGetAttribute(
         cupy.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE, 0
     )
-     
+
 
     print(f"Device Name: {DEVICE_NAME}")
     print(f"Maximum number of multiprocessors: {SMs}")
@@ -213,7 +213,7 @@ def CudaInfo():
     print(f"Maximum shared memory per block:  {SHR_MEM} bytes")
     print(f"Warp Size:  {WARPSIZE}")
     print(f"L2 Cache Size:  {L2Size} bytes")
-    
+
 
 
 def main():
@@ -233,25 +233,25 @@ def main():
     CudaInfo()
     #See if Numpy is properly linked with MKL
     print(np.show_config())
-    
+
     #Initialize values
     #Threads per block of operations, good to be a multiple of 32 according to programming guide, maximum of 32,32 since 32*32 = 1024, as per device info
     threadsperblock = (16, 16)
     num_runs = 10
-    
+
     #Randomized initial matrices, numba CUDA works with numpy arrays
     A = np.random.rand(m, n).astype(np.float32)
     B = np.random.rand(n, k).astype(np.float32)
     print("-----------------")
-    
+
     #Run against the GPU naively
-    start = time.time()    
+    start = time.time()
     for _ in range(num_runs):
         result = cuda_gemm(A, B, threadsperblock, "Naive")
     end = time.time()
     cuda_time = end - start
     print("-----------------")
-    
+
     #Run against the GPU with global memory coalesced access
     start = time.time()
     for _ in range(num_runs):
@@ -259,7 +259,7 @@ def main():
     end = time.time()
     cuda_gmc_time = end - start
     print("-----------------")
-    
+
     #Run against the GPU with shared memory caching
     start = time.time()
     for _ in range(num_runs):
@@ -267,7 +267,7 @@ def main():
     end = time.time()
     cuda_smc_time = end - start
     print("-----------------")
-    
+
     #Run against the GPU with vectorization
     start = time.time()
     for _ in range(num_runs):
@@ -275,7 +275,7 @@ def main():
     end = time.time()
     cuda_vec_time = end - start
     print("-----------------")
-        
+
 
     print("Naive implementation")
      #Naive GEMM
@@ -285,7 +285,7 @@ def main():
         naive_matrix_mul(A, B)
     end = time.time()
     naive_time = end - start
-    
+
     print("Naive implementation with JIT")
     #naive matrix mult with numba
     start = time.time()
@@ -302,7 +302,7 @@ def main():
         ikj_matrix_mul_numba(A, B)
     end = time.time()
     ikj_time_numba = end - start
-    
+
     print("MKL implementation")
    #MKL gemm
     start = time.time()
@@ -311,7 +311,7 @@ def main():
         mkl_gemm(A, B)
     end = time.time()
     mkl_gemm_time = end - start
-    
+
     #Not possible, wanted to see what would happen.
     #MKL JIT gemm
     #start = time.time()
@@ -329,11 +329,11 @@ def main():
         cublas_gemm(A, B)
     end = time.time()
     cublas_gemm_time = end - start
-    
+
     #Save an array of the trial run
     trialTimes = [naive_time,naive_time_numba,ikj_time_numba,cuda_time, cuda_gmc_time, cuda_smc_time, cuda_vec_time, mkl_gemm_time, cublas_gemm_time]
     #Call the save to excel function, this will save on every successful run through, comment out to just play around
-    save_trial(trialTimes)    
+    #save_trial(trialTimes)
 
     #Overall time
     print('naive time: {}'.format(naive_time))
@@ -346,7 +346,7 @@ def main():
     print('MKL Time : {}'.format(mkl_gemm_time))
     #print('MKL JIT Time : {}'.format(jit_mkl_gemm_time))
     print('CuBLAS Time : {}'.format(cublas_gemm_time))
-    
+
 
 main()
 

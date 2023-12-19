@@ -81,9 +81,9 @@ python Gemm_CUDA.py 4096 4096 4096
 nvprof python Gemm_CUDA.py 4096 4096 4096  
 
 # Trials
-- All trials for Matrix Size will use the naive non-JIT python implementation
+- All trials for Matrix Size will use the naive non-JIT implementation of GEMM
 - All trials after 6 will not use the naive non-JIT implementation for the sake of time and sanity (4096 was taking more than 20 hours...)
-- All trials will compare against naive implementation with numba JIT and loop re-ordered implementation with numba JIT
+- All trials will compare against naive GEMM with numba JIT and loop re-ordered GEMM with numba JIT
 - Threads Per Block affects all 4 kernels, TILE_DIM affects just shared memory caching and vectorized kernels, Trials 8 to 23 will only compare the GPU kernels
 - Profiling done on some interesting trials/kernels for trials 24 - 28
 - MKL and CuBLAS implementations are trials 30 - 36 for the same matrix sizes as 1-7, no other changes needed since they are optimised kernels already

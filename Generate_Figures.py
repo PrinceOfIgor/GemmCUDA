@@ -76,7 +76,7 @@ plt.title('Naive CPU & GPU Comparative')
 plt.xlabel('Matrix Size')
 plt.ylabel('Log Time (s)')
 plt.yscale('log')
-plt.xticks(range(0,4100,128))       
+plt.xticks(range(0,4100,128))
 
 plt.legend()
 plt.show()
@@ -92,7 +92,7 @@ plt.title('GPU Kernel Comparative')
 plt.xlabel('Matrix Size')
 plt.ylabel('Log Time (s)')
 plt.yscale('log')
-plt.xticks(range(0,4100,128))    
+plt.xticks(range(0,4100,128))
 
 plt.legend()
 plt.show()
@@ -113,7 +113,7 @@ plt.title('Standard Library Comparative - Small Matrices')
 plt.xlabel('Matrix Size')
 plt.ylabel('Log Time (s)')
 plt.yscale('log')
-plt.xticks(range(0,1050,32))  
+plt.xticks(range(0,1050,32))
 
 plt.legend()
 plt.show()
@@ -132,5 +132,20 @@ plt.yscale('log')
 plt.xticks(range(1024,16400,1024))
 
 plt.legend()
+plt.show()
+
+#Execution time comparison for our best approaches vs MKL and CuBLAS as well
+
+barLabels = ['CUDA Basic Kernel', 'General Memory Coalescing', 'Shared Memory Caching', 'Vectorized CUDA Kernel', 'MKL', 'CuBLAS']
+barVals = [cudaBasicT, gmcT, smcT, vecT, MKL_T, cuBLAS_T]
+
+plt.bar(barLabels, barVals, color=['purple','purple','purple','purple','blue','green'])
+plt.xlabel('Optimized Methods')
+plt.ylabel('Execution Time (seconds)')
+plt.title('Comparison of Execution Times for Multiplication of 4096x4096 Matrices')
+#Show the times on the bar graph
+for label, time in zip(barLabels, barVals):
+    plt.text(label, time, f'{time:.2f}', ha='center', va='bottom')
+
 plt.show()
 
