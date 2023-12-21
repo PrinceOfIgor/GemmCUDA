@@ -27,7 +27,7 @@ Maximum shared memory per block:  49152 bytes
 Warp Size:  32  
 L2 Cache Size:  2883584 bytes  
 
-# Prerequsites:
+# Prerequisites:
 A NVIDIA CUDA capable graphics card, reference can be found here: https://developer.nvidia.com/cuda-gpus
 
 The NVIDIA CUDA toolkit, can be found here: https://developer.nvidia.com/cuda-toolkit
